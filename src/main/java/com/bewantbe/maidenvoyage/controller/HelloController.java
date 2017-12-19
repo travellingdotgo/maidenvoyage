@@ -10,8 +10,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+
+import com.bewantbe.maidenvoyage.biz.Track;
+
 @RestController
 public class HelloController {
+
+
+    public final static String NEWLINE = "</br>";
 
     /*
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -79,14 +93,61 @@ public class HelloController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         String sourceip = request.getRemoteAddr().toString();
+        String useragent = request.getHeader("User-Agent");
         String time = df.format(new Date());
         String pageurl = "/";
         //String sql = "insert into query (sourceip,time,pageurl) values ('0.0.0.0','12312345678','/')";
-        String sql = "insert into query (sourceip,time,pageurl) values ('" + sourceip  + "\',\'" + time + "\',\'" + pageurl + "\')";
+        String sql = "insert into query (sourceip,time,pageurl,useragent) values ('" + sourceip
+                + "\',\'" + time
+                + "\',\'" + pageurl
+                + "\',\'" + useragent + "\')";
         jdbcTemplate.execute(sql);
         System.out.println("执行完成");
 
-        return "Hello, you are from ip: " + request.getRemoteAddr().toString() + " ?";
+        return "Hello, you are from ip: " + sourceip + "  " + useragent +" ?";
     }
+
+
+    @RequestMapping(value = "/getquery", method = RequestMethod.GET)
+    public String getQuery(HttpServletRequest request) {
+
+        String sqlSelect = "SELECT * FROM query";
+        List<Track> listContact = jdbcTemplate.query(sqlSelect, new RowMapper<Track>() {
+
+            public Track mapRow(ResultSet result, int rowNum) throws SQLException {
+                Track contact = new Track();
+                contact.setSourceip (result.getString("sourceip"));
+                contact.setTime(result.getString("time"));
+                contact.setPageurl(result.getString("pageurl"));
+                contact.setUseragent(result.getString("useragent"));
+
+                return contact;
+            }
+
+        });
+
+        String query_infos = "";
+
+        for (Track aContact : listContact) {
+            String sourceip = aContact.getSourceip();
+            String time = aContact.getTime();
+            String useragent = aContact.getUseragent();
+
+            // 111.111.111.111
+            // 2017-12-19 11:32:12
+
+            String info = String.format("%s _ %s _ %s", sourceip,time,useragent );
+            query_infos +=  info + NEWLINE;
+        }
+
+        String str = "Hello, you are from ip: " + NEWLINE
+                    + request.getRemoteAddr().toString()
+                    +  NEWLINE + NEWLINE
+                    + "history: "  + NEWLINE
+                    + query_infos  + NEWLINE + NEWLINE;
+
+        return str;
+    }
+
 
 }

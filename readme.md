@@ -1,4 +1,7 @@
 
+# 构建
+mvn clean; mvn package -DskipTests && mvn spring-boot:run
+
 
 环境依赖
 
@@ -7,6 +10,7 @@
 mysql> CREATE DATABASE db_maidenvoyage;
 mysql> show databases;
 # mysql> drop database db_maidenvoyage;
+# drop table query;
 
 mysql>    use db_maidenvoyage;
 mysql>    show tables;
@@ -27,6 +31,7 @@ CREATE TABLE `query` (
   `sourceip` varchar(45) DEFAULT NULL,
   `time` varchar(45) DEFAULT NULL,
   `pageurl` varchar(45) DEFAULT NULL,
+  `useragent` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 select * from query;
