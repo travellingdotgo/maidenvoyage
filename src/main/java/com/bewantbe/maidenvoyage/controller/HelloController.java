@@ -21,6 +21,38 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import com.bewantbe.maidenvoyage.biz.Track;
 
+
+import java.io.IOException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 @RestController
 public class HelloController {
 
@@ -97,12 +129,35 @@ public class HelloController {
         String time = df.format(new Date());
         String pageurl = "/";
         //String sql = "insert into query (sourceip,time,pageurl) values ('0.0.0.0','12312345678','/')";
+
+
+        if(!sourceip.equals("127.0.0.1")){
+            String geo = testHttp(sourceip);
+            String geoinfo = geo.substring( 5,geo.length()-1);
+            System.out.println("sdfdaf: " + geoinfo);
+            useragent += "...." + geoinfo;
+        }else{
+
+        }
+
         String sql = "insert into query (sourceip,time,pageurl,useragent) values ('" + sourceip
                 + "\',\'" + time
                 + "\',\'" + pageurl
                 + "\',\'" + useragent + "\')";
+
         jdbcTemplate.execute(sql);
-        System.out.println("执行完成");
+        System.out.println("执行完成: " + sql);
+
+        /*
+        try {
+            JSONObject jsonObject = new JSONObject(result2);
+            JSONObject data = jsonObject.getJSONObject("data");
+            System.out.println("sdfdaf: " + data.toString());
+
+        }catch (Exception e){
+
+        }
+        */
 
         return "Hello, you are from ip: " + sourceip + "  " + useragent +" ?";
     }
@@ -149,5 +204,20 @@ public class HelloController {
         return str;
     }
 
+    public String testHttp( String ip ){
+        String URL = "http://api.ip138.com/query/?ip=" + ip + "&datatype=jsonp&callback=find";
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
+        headers.add("token", "62cf4a23815ff4228fc014556fb4e776");
+        HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate
+                .exchange(
+                        URL,
+                        HttpMethod.GET, requestEntity, String.class);
+        String body = response.getBody();
+        System.out.println(body);
+        return body;
+    }
 
 }
