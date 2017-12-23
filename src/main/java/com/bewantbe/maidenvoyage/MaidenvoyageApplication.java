@@ -1,5 +1,6 @@
 package com.bewantbe.maidenvoyage;
 
+import com.bewantbe.maidenvoyage.util.DebugUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,20 +16,11 @@ import java.util.Arrays;
 @SpringBootApplication
 public class MaidenvoyageApplication {
 
-	//
 	@Value("${trand}")
 	private static String trand;
 
 	public static void main(String[] args) {
-
-		System.out.println("main 启动中: " + trand);
-
-		ApplicationContext ctx = SpringApplication.run(MaidenvoyageApplication.class, args);
-
-		String[] beanNames = ctx.getBeanDefinitionNames();
-		Arrays.sort(beanNames);
-		for (String beanName : beanNames) {
-			System.out.println(beanName);
-		}
+		System.out.println("main 启动中: ");
+		//DebugUtil.debugLoadedBeans(MaidenvoyageApplication.class,args);
 	}
 }
