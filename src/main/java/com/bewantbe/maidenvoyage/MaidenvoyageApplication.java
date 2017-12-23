@@ -21,6 +21,7 @@ public class MaidenvoyageApplication {
 
 	public static void main(String[] args) {
 		System.out.println("main 启动中: ");
-		//DebugUtil.debugLoadedBeans(MaidenvoyageApplication.class,args);
+		ApplicationContext ctx = SpringApplication.run(MaidenvoyageApplication.class, args);
+		//DebugUtil.debugLoadedBeans(ctx);
 	}
 }
