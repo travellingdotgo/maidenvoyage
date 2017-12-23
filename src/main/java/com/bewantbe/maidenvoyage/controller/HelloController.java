@@ -42,24 +42,13 @@ public class HelloController {
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        String sourceip = "8.8.8.8";
-        try{
-            sourceip = RequestUtil.getIpAddr(request);
-        }
-        catch (Exception e){
-            sourceip = "9.9.9.9";
-        }
+        String sourceip = RequestUtil.getIpAddr(request);
         String useragent = request.getHeader("User-Agent");
         String host = request.getHeader("Host");
         String time = df.format(new Date());
         String pageurl = request.getRequestURL().toString();//getRequestURI
 
-        String geoinfo = "";
-        if(!sourceip.equals("127.0.0.1")){
-            geoinfo = RequestUtil.getGeo(sourceip);
-        }else{
-
-        }
+        String geoinfo = RequestUtil.getGeo(sourceip);
 
         String sql = "insert into queryv3 (sourceip,time,pageurl,loc,useragent,host) values "
                 + "('" + sourceip
