@@ -13,6 +13,7 @@ public class Track {
     private String sourceip;
     private String time;
     private String pageurl;
+    private String loc;
     private String useragent;
 
     public String getSourceip() {
@@ -45,6 +46,14 @@ public class Track {
 
     public void setUseragent(String useragent) {
         this.useragent = useragent;
+    }
+
+    public String getLoc() {
+        return loc;
+    }
+
+    public void setLoc(String loc) {
+        this.loc = loc;
     }
 
     // getters and setters are removed for brevity.

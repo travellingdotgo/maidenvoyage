@@ -1,0 +1,50 @@
+<html>
+<head>
+    <style type="text/css">
+        body {color:red}
+        h1 {color:#00ff00}
+        p.ex {color:rgb(0,0,255)}
+    </style>
+
+
+    <style>
+        strong {
+            font-family: "Courier New";
+            font-size: 6px;
+            border: white solid 1px;
+            padding: 1px;
+            margin: 1px;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<table style="width:100%" border="1" cellspacing="0">
+    <tr>
+        <th>sourceip</th>
+        <th>time</th>
+        <th>loc</th>
+        <th>useragent</th>
+        <th>pageurl</th>
+    </tr>
+
+
+    #foreach($chart in $querylist)
+    <tr>
+        <th><strong>$chart.sourceip</strong></th>
+        <th><strong>$chart.time</strong></th>
+        <th><strong>$chart.loc</strong></th>
+        <th><strong>$chart.useragent</strong></th>
+        <th><strong>$chart.pageurl</strong></th>
+    </tr>
+    #end
+</table>
+
+
+<h1>这是 heading 1</h1>
+<p>这是一段普通的段落。请注意，该段落的文本是红色的。在 body 选择器中定义了本页面中的默认文本颜色。</p>
+<p class="ex">该段落定义了 class="ex"。该段落中的文本是蓝色的。</p>
+</body>
+</html>

@@ -3,11 +3,14 @@ package com.bewantbe.maidenvoyage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.TimeZone;
 
 import java.sql.ResultSet;
@@ -52,8 +55,9 @@ import org.springframework.web.client.RestTemplate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 public class HelloController {
 
 
@@ -66,83 +70,45 @@ public class HelloController {
     }
     */
 
-    /**
-     * 启动应用，浏览器打开http://localhost:8080/hello，会调用该方法，打印:Hello, Spring Boot.Request:GET.
-     * @return
-     */
-    @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public String helloGet() {
-        return "Hello, Spring Boot.Request:GET";
-    }
-
-    @RequestMapping(value = "/hello", method = RequestMethod.POST)
-    public String helloPost() {
-        return "Hello, Spring Boot.Request:POST";
-    }
-
-    /*
-    @GetMapping("/hello")  //等同于@RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public String helloGet() {
-        return "Hello, Spring Boot.Request.GET";
-    }
-
-    @PostMapping("hello")  //等同于@RequestMapping(value = "/hello", method = RequestMethod.POST)
-    public String helloPost() {
-        return "Hello, Spring Boot.Request:POST";
-    }
-    */
-
-    @RequestMapping(value = {"/twourl1", "/twourl2"}, method = RequestMethod.GET)
-    public String twourl() {
-        return "Hello, Spring Boot. twourl1/twour2";
-    }
-
-    /**
-     * http://localhost:8080/say/5?name=howieli
-     */
-    @GetMapping(value = "/say/{id}")
-    public String helloGet(@PathVariable("id") int id, @RequestParam("name") String name) {
-        return "id: " +  id + ",name:" + name;
-    }
-
-    @RequestMapping(value = "/getip", method = RequestMethod.GET)
-    public String getIp() {
-        return "Hello, Spring Boot.Request:GET";
-    }
-
-
-    @RequestMapping(value = "/getclientip", method = RequestMethod.GET)
-    public String getClientIP(HttpServletRequest request) {
-        return "Hello, you are from ip: " + request.getRemoteAddr().toString() + " ?";
-    }
-
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String getIndex(HttpServletRequest request) {
+    public ModelAndView getIndex(HttpServletRequest request, Model model) {
+        debug(request);
+
+        ModelAndView modelAndView = new ModelAndView("index");
+
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        String sourceip = request.getRemoteAddr().toString();
+        String sourceip = "8.8.8.8";
+        try{
+            sourceip = getIpAddr(request); //request.getAttribute("X-real-ip").toString();//request.getRemoteAddr().toString();
+        }
+        catch (Exception e){
+            sourceip = "9.9.9.9";
+        }
         String useragent = request.getHeader("User-Agent");
         String time = df.format(new Date());
         String pageurl = "/";
         //String sql = "insert into query (sourceip,time,pageurl) values ('0.0.0.0','12312345678','/')";
 
 
+        String geoinfo = "";
         if(!sourceip.equals("127.0.0.1")){
-            String geo = testHttp(sourceip);
-            String geoinfo = geo.substring( 5,geo.length()-1);
-            System.out.println("sdfdaf: " + geoinfo);
-            useragent += "...." + geoinfo;
+            String geo = getGeo(sourceip);
+            geoinfo = geo.substring( 5,geo.length()-1);
+            //System.out.println("sdfdaf: " + geoinfo);
+            //useragent = geoinfo + "...." + useragent;
         }else{
 
         }
 
-        String sql = "insert into query (sourceip,time,pageurl,useragent) values ('" + sourceip
+        String sql = "insert into queryv2 (sourceip,time,pageurl,loc,useragent) values ('" + sourceip
                 + "\',\'" + time
                 + "\',\'" + pageurl
+                + "\',\'" + geoinfo
                 + "\',\'" + useragent + "\')";
 
         jdbcTemplate.execute(sql);
@@ -159,14 +125,21 @@ public class HelloController {
         }
         */
 
-        return "Hello, you are from ip: " + sourceip + "  " + useragent +" ?";
+        String info = String.format("%30s _ %30s _ %s", sourceip,time,useragent );
+        System.out.println(info);
+
+        //.....................page....Obj....
+        model.addAttribute("index", info);
+        //return "Hello, you are from ip: " + info;
+        return modelAndView;
     }
 
 
     @RequestMapping(value = "/getquery", method = RequestMethod.GET)
-    public String getQuery(HttpServletRequest request) {
+    public void getQuery(HttpServletRequest request, Model model) {
+        debug(request);
 
-        String sqlSelect = "SELECT * FROM query";
+        String sqlSelect = "SELECT * FROM queryv2";
         List<Track> listContact = jdbcTemplate.query(sqlSelect, new RowMapper<Track>() {
 
             public Track mapRow(ResultSet result, int rowNum) throws SQLException {
@@ -174,6 +147,7 @@ public class HelloController {
                 contact.setSourceip (result.getString("sourceip"));
                 contact.setTime(result.getString("time"));
                 contact.setPageurl(result.getString("pageurl"));
+                contact.setLoc(result.getString("loc"));
                 contact.setUseragent(result.getString("useragent"));
 
                 return contact;
@@ -181,6 +155,12 @@ public class HelloController {
 
         });
 
+
+        model.addAttribute("querylist", listContact);
+
+        //return "getquery";
+
+        /*
         String query_infos = "";
 
         for (Track aContact : listContact) {
@@ -191,20 +171,42 @@ public class HelloController {
             // 111.111.111.111
             // 2017-12-19 11:32:12
 
-            String info = String.format("%s _ %s _ %s", sourceip,time,useragent );
+            String info = String.format("%30s _ %30s _ %s", sourceip,time,useragent );
             query_infos +=  info + NEWLINE;
         }
 
+
+        String sourceip = "8.8.8.8";
+        try{
+            sourceip = getIpAddr(request); //request.getAttribute("X-real-ip").toString();//request.getRemoteAddr().toString();
+        }
+        catch (Exception e){
+            sourceip = "9.9.9.9";
+        }
+
         String str = "Hello, you are from ip: " + NEWLINE
-                    + request.getRemoteAddr().toString()
+                    + sourceip
+                    //+ request.getRemoteAddr().toString()
                     +  NEWLINE + NEWLINE
                     + "history: "  + NEWLINE
                     + query_infos  + NEWLINE + NEWLINE;
 
+
         return str;
+        */
+
     }
 
-    public String testHttp( String ip ){
+    public String getGeo( String ip ){
+        final String MYURL1 = "23.83.245.240";
+        final String MYURL2 = "125.118.92.";
+        if(MYURL1.equals(ip)){
+            return "find({\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"老地方1\",\"  \",\"  \",\"  \",\"  \",\"  \"]})";
+        }
+        if(ip.contains(MYURL2)){
+            return "find({\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"老地方2\",\"  \",\"  \",\"  \",\"  \",\"  \"]})";
+        }
+
         String URL = "http://api.ip138.com/query/?ip=" + ip + "&datatype=jsonp&callback=find";
 
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
@@ -218,6 +220,46 @@ public class HelloController {
         String body = response.getBody();
         System.out.println(body);
         return body;
+    }
+
+    public static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("x-real-ip");
+
+        if (ip == null || ip.length() == 0
+                || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("x-forwarded-for");
+            if (ip != null) {
+                ip = ip.split(",")[0].trim();
+            }
+        }
+
+        if (ip == null || ip.length() == 0
+                || "unknown".equalsIgnoreCase(ip)){
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+
+        if (ip == null
+                || ip.length() == 0
+                || "unknown".equalsIgnoreCase(ip)
+                ){
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+
+        if (ip == null || ip.length() == 0
+                || "unknown".equalsIgnoreCase(ip)){
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
+    }
+
+
+    public static void debug(HttpServletRequest request){
+        Enumeration<String> h = request.getHeaderNames();
+        while(h.hasMoreElements()){
+            String n = h.nextElement();
+            System.out.println(n+"==="+request.getHeader(n));
+        }
     }
 
 }
