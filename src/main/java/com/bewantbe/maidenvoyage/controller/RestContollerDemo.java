@@ -1,6 +1,6 @@
 package com.bewantbe.maidenvoyage.controller;
 
-
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -57,13 +57,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.servlet.ModelAndView;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 public class RestContollerDemo {
 
-
     public final static String NEWLINE = "</br>";
-
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 启动应用，浏览器打开http://localhost:8080/hello，会调用该方法，打印:Hello, Spring Boot.Request:GET.
@@ -71,6 +73,7 @@ public class RestContollerDemo {
      */
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public String helloGet() {
+        logger.debug("This is a debug message");
         return "Hello, Spring Boot.Request:GET";
     }
 

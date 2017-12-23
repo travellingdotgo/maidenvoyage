@@ -15,6 +15,7 @@ public class Track {
     private String pageurl;
     private String loc;
     private String useragent;
+    private String host;
 
     public String getSourceip() {
         return sourceip;
@@ -54,6 +55,14 @@ public class Track {
 
     public void setLoc(String loc) {
         this.loc = loc;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     // getters and setters are removed for brevity.

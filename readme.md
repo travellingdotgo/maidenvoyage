@@ -39,3 +39,14 @@ select * from queryv2;
 
 
 
+CREATE TABLE `queryv3` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sourceip` varchar(45) DEFAULT NULL,
+  `time` varchar(45) DEFAULT NULL,
+  `pageurl` varchar(45) DEFAULT NULL,
+  `loc` varchar(200) DEFAULT NULL,
+  `useragent` varchar(200) DEFAULT NULL,
+  `host` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+select * from queryv3;

@@ -79,6 +79,16 @@ public class HelloController {
 
         ModelAndView modelAndView = new ModelAndView("index");
 
+        // debug begin
+        String url = "";
+        url = request.getScheme() +"://" + request.getServerName()
+                + ":" +request.getServerPort()
+                + request.getServletPath();
+        if (request.getQueryString() != null){
+            url += "?" + request.getQueryString();
+        }
+        System.out.println("concated url: " + url);
+        // debug end
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT+8"));
@@ -90,8 +100,9 @@ public class HelloController {
             sourceip = "9.9.9.9";
         }
         String useragent = request.getHeader("User-Agent");
+        String host = request.getHeader("Host");
         String time = df.format(new Date());
-        String pageurl = "/";
+        String pageurl = request.getRequestURL().toString();//getRequestURI
         //String sql = "insert into query (sourceip,time,pageurl) values ('0.0.0.0','12312345678','/')";
 
 
@@ -105,11 +116,12 @@ public class HelloController {
 
         }
 
-        String sql = "insert into queryv2 (sourceip,time,pageurl,loc,useragent) values ('" + sourceip
+        String sql = "insert into queryv3 (sourceip,time,pageurl,loc,useragent,host) values ('" + sourceip
                 + "\',\'" + time
                 + "\',\'" + pageurl
                 + "\',\'" + geoinfo
-                + "\',\'" + useragent + "\')";
+                + "\',\'" + useragent
+                + "\',\'" + host + "\')";
 
         jdbcTemplate.execute(sql);
         System.out.println("执行完成: " + sql);
@@ -139,7 +151,7 @@ public class HelloController {
     public void getQuery(HttpServletRequest request, Model model) {
         debug(request);
 
-        String sqlSelect = "SELECT * FROM queryv2";
+        String sqlSelect = "SELECT * FROM queryv3";
         List<Track> listContact = jdbcTemplate.query(sqlSelect, new RowMapper<Track>() {
 
             public Track mapRow(ResultSet result, int rowNum) throws SQLException {
@@ -149,6 +161,7 @@ public class HelloController {
                 contact.setPageurl(result.getString("pageurl"));
                 contact.setLoc(result.getString("loc"));
                 contact.setUseragent(result.getString("useragent"));
+                contact.setHost(result.getString("host"));
 
                 return contact;
             }
