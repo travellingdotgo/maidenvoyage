@@ -1,6 +1,7 @@
 package com.bewantbe.maidenvoyage;
 
 import com.bewantbe.maidenvoyage.util.DebugUtil;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.Arrays;
 
 
+@MapperScan("com.bewantbe.maidenvoyage.dao")
 @EnableAutoConfiguration
 @SpringBootApplication
 public class MaidenvoyageApplication {
