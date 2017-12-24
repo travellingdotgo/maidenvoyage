@@ -49,6 +49,9 @@ public class HelloController {
         String pageurl = request.getRequestURL().toString();//getRequestURI
 
         String geoinfo = RequestUtil.getGeo(sourceip);
+        if(useragent==null) {
+            useragent="NULL";
+        }
 
         String sql = "insert into queryv3 (sourceip,time,pageurl,loc,useragent,host) values "
                 + "('" + sourceip
