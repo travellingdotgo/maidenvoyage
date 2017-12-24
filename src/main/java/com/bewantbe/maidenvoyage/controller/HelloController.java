@@ -61,7 +61,7 @@ public class HelloController {
         jdbcTemplate.execute(sql);
         System.out.println("执行完成: " + sql);
 
-        String info = String.format("%30s _ %30s _ %s", sourceip,time,useragent );
+        String info = String.format("%s <br /> %s <br /> %s", sourceip,time,useragent );
         System.out.println(info);
 
         model.addAttribute("index", info);
