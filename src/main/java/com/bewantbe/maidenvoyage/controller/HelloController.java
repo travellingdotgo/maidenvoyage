@@ -49,6 +49,7 @@ public class HelloController {
         String pageurl = request.getRequestURL().toString();//getRequestURI
 
         String geoinfo = RequestUtil.getGeo(sourceip);
+        updateIp2geoCache(sourceip,geoinfo);
         if(useragent==null) {
             useragent="NULL";
         }
@@ -93,5 +94,15 @@ public class HelloController {
         });
 
         model.addAttribute("querylist", listContact);
+    }
+
+    // .     .     .     .     .     Util    .     .     .     .     .
+    private void updateIp2geoCache(String ipaddr, String geo){
+        String sql = "replace into ip2geocache (ipaddr,geo) values "
+                + "('" + ipaddr
+                + "\',\'" + geo + "\')";
+
+        jdbcTemplate.execute(sql);
+        System.out.println("执行完成: " + sql);
     }
 }
