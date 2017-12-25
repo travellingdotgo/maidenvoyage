@@ -48,10 +48,25 @@ public class HelloController {
         String time = df.format(new Date());
         String pageurl = request.getRequestURL().toString();//getRequestURI
 
-        String geoinfo = RequestUtil.getGeo(sourceip);
-        updateIp2geoCache(sourceip,geoinfo);
-        if(useragent==null) {
-            useragent="NULL";
+        String geoinfo = searchIp2GeoInSpeciallist(sourceip);
+        if(geoinfo==null){
+            System.out.println("searchIp2GeoInSpeciallist return null ");
+            try{
+                geoinfo = searchIp2GeoInCache(sourceip);
+                if(geoinfo==null){
+                    System.out.println("searchIp2GeoInCache return null ");
+                    geoinfo = RequestUtil.getGeo(sourceip);
+                    updateIp2geoCache(sourceip,geoinfo);
+                }else{
+                    System.out.println("searchIp2GeoInCache success ");
+                }
+
+                if(useragent==null) {
+                    useragent="NULL";
+                }
+            }catch (Exception e){
+                System.out.println("searchIp2GeoInCache exception: " + e.toString() );
+            }
         }
 
         String sql = "insert into queryv3 (sourceip,time,pageurl,loc,useragent,host) values "
@@ -105,4 +120,47 @@ public class HelloController {
         jdbcTemplate.execute(sql);
         System.out.println("执行完成: " + sql);
     }
+
+
+    private String searchIp2GeoInSpeciallist(String ipaddr){
+        final String MYURL1 = "127.0.0.1";
+        final String MYURL2 = "localhost";
+
+        if(MYURL1.equals(ipaddr)){
+            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
+        } else if(MYURL2.equals(ipaddr)){
+            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
+        }
+
+        return null;
+    }
+
+    private String searchIp2GeoInCache(String ipaddr) throws Exception{
+        /*
+        jdbcTemplate.update(
+                "insert into t_actor (first_name, last_name) values (?, ?)",
+                "Leonor", "Watling");
+                */
+
+        /*
+        String geo = jdbcTemplate.queryForObject(
+                "select geo from ip2geocache where ipaddr = ?",
+                new Object[]{ipaddr}, String.class);
+
+        return geo;
+        */
+        List<String> list = jdbcTemplate.queryForList(
+                "select geo from ip2geocache where ipaddr = ?",
+                new Object[]{ipaddr}, String.class);
+
+        if (list.size()==0){
+            return null;
+        }else if (list.size()==1){
+            return list.get(0);
+        }else{
+            throw new Exception("the result list int this senario should be between 0-1");
+        }
+    }
+
+
 }

@@ -61,20 +61,7 @@ public class RequestUtil {
         System.out.println("combined url: " + url);
     }
 
-
-
     public static String getGeo( String ip ){
-        final String MYURL1 = "23.83.245.240";
-        final String MYURL3 = "127.0.0.1";
-        final String MYURL2 = "125.118.92.";
-
-        if(MYURL1.equals(ip)){
-            return "{\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"老地方1\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
-        } else if(MYURL3.equals(ip)){
-            return "{\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
-        } else if(ip.contains(MYURL2)){
-            return "{\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"老地方2\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
-        }
         // return "find({\"ret\":\"ok\",\"ip\":\"42.120.74.111\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]})";
 
         String URL = "http://api.ip138.com/query/?ip=" + ip + "&datatype=jsonp&callback=find";
