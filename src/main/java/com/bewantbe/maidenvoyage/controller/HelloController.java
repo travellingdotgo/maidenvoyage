@@ -123,6 +123,8 @@ public class HelloController {
 
 
     private String searchIp2GeoInSpeciallist(String ipaddr){
+        System.out.println("searchIp2GeoInSpeciallist ipaddr=" + ipaddr);
+
         final String MYURL1 = "127.0.0.1";
         final String MYURL2 = "localhost";
 
