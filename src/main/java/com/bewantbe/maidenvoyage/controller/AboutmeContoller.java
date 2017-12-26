@@ -22,4 +22,9 @@ public class AboutmeContoller {
     }
 
 
+    @RequestMapping(value = "/resume", method = RequestMethod.GET)
+    public ModelAndView getResume() {
+        return new ModelAndView("forward:/cv");
+    }
+
 }
