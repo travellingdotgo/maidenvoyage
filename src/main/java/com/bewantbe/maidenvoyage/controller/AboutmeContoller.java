@@ -18,13 +18,14 @@ public class AboutmeContoller {
     @RequestMapping(value = "/aboutme", method = RequestMethod.GET)
     public ModelAndView getAboutme() {
         //return "Hello, about me";
+        System.out.println("getAboutme: " );
         return new ModelAndView("redirect:/cv");
     }
 
 
     @RequestMapping(value = "/resume", method = RequestMethod.GET)
     public ModelAndView getResume() {
-        return new ModelAndView("forward:/cv");
+        return new ModelAndView("forward:/aboutme");
     }
 
 }
