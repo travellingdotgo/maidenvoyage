@@ -1,6 +1,7 @@
 package com.bewantbe.maidenvoyage.controller;
 
 
+import com.bewantbe.maidenvoyage.Consts;
 import com.bewantbe.maidenvoyage.util.RequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +48,11 @@ public class HelloController {
         String host = request.getHeader("Host");
         String time = df.format(new Date());
         String pageurl = request.getRequestURL().toString();//getRequestURI
+
+
+        if (isInBlacklist(sourceip)){
+            System.out.println("isInBlacklist !");
+        }
 
         String geoinfo = searchIp2GeoInSpeciallist(sourceip);
         if(geoinfo==null){
@@ -122,16 +128,33 @@ public class HelloController {
     }
 
 
+
+    private boolean isInBlacklist(String ipaddr){
+        System.out.println("isInBlacklist ipaddr=" + ipaddr);
+
+        for (int i = 0; i< Consts.blacklist.length; i++){
+            if (ipaddr.startsWith(Consts.blacklist[i])){
+                System.out.println("startsWith blacklist: " + Consts.blacklist[i]);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private String searchIp2GeoInSpeciallist(String ipaddr){
         System.out.println("searchIp2GeoInSpeciallist ipaddr=" + ipaddr);
 
         final String MYURL1 = "127.0.0.1";
         final String MYURL2 = "localhost";
+        final String MYURL3 = "0:0:0:0:0:0:0:1";
 
         if(MYURL1.equals(ipaddr)){
-            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
+            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环1\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
         } else if(MYURL2.equals(ipaddr)){
-            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
+            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环2\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
+        } else if(MYURL3.equals(ipaddr)){
+            return "{\"ret\":\"ok\",\"ip\":\"0.0.0.0\",\"data\":[\"本地回环3\",\"  \",\"  \",\"  \",\"  \",\"  \"]}";
         }
 
         return null;

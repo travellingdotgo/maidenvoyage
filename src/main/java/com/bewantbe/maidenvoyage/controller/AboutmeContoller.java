@@ -25,7 +25,7 @@ public class AboutmeContoller {
 
     @RequestMapping(value = "/resume", method = RequestMethod.GET)
     public ModelAndView getResume() {
-        return new ModelAndView("forward:/aboutme");
+        return new ModelAndView("forward:/git_faq.jpg");
     }
 
 }
