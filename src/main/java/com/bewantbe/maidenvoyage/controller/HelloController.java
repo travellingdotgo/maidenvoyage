@@ -49,9 +49,11 @@ public class HelloController {
         String time = df.format(new Date());
         String pageurl = request.getRequestURL().toString();//getRequestURI
 
-
+        // if the comming user is in blacklist
         if (isInBlacklist(sourceip)){
             System.out.println("isInBlacklist !");
+            ModelAndView blacklistView = new ModelAndView("blacklist");
+            return blacklistView;
         }
 
         String geoinfo = searchIp2GeoInSpeciallist(sourceip);
