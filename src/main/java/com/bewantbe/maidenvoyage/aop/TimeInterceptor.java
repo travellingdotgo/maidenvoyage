@@ -25,7 +25,7 @@ public class TimeInterceptor {
     private static final long ONE_MINUTE = 1000;
 
     // service层的统计耗时切面，类型必须为final String类型的,注解里要使用的变量只能是静态常量类型的
-    public static final String POINT = "execution (* com.bewantbe.maidenvoyage.controller.*(..))";
+    public static final String POINT = "execution (* com.bewantbe.maidenvoyage.controller.*.*(..))";
 
     /**
      * 统计方法执行耗时Around环绕通知
