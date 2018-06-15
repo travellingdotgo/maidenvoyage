@@ -65,8 +65,10 @@ public class TimeInterceptor {
     private void printExecTime(String methodName, long startTime, long endTime) {
         long diffTime = endTime - startTime;
         if (diffTime > ONE_MINUTE) {
+            System.out.println("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
             logger.warn("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
         }else{
+            System.out.println("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
             logger.debug("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
         }
     }
