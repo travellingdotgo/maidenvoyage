@@ -66,6 +66,8 @@ public class TimeInterceptor {
         long diffTime = endTime - startTime;
         if (diffTime > ONE_MINUTE) {
             logger.warn("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
+        }else{
+            logger.debug("-----" + methodName + " 方法执行耗时：" + diffTime + " ms");
         }
     }
 
